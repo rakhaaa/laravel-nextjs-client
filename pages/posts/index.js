@@ -1,43 +1,33 @@
 //layout
-import Layout from "../layouts/custom";
-
-//import hook react
-import { useState, useEffect } from "react";
+import Layout from "../../layouts/custom";
 
 //import Link
 import Link from "next/link";
 
-//import Head
-import Head from "next/head";
-
 //import axios
 import axios from "axios";
 
-function Dashboard() {
-  // state posts
-  const [posts, setPosts] = useState([]);
+//fetch with "getServerSideProps"
+export async function getServerSideProps() {
+  //http request
+  const req = await axios.get(
+    `${process.env.NEXT_PUBLIC_API_BACKEND}/api/posts`
+  );
+  const res = await req.data.data.data;
 
-  const getServerSideProps = async () => {
-    try {
-      const req = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_BACKEND}/api/posts`
-      );
-      const res = await req.data.data.data;
-      setPosts(res);
-    } catch (error) {
-      console.log(error);
-    }
+  return {
+    props: {
+      posts: res, // <-- assign response
+    },
   };
+}
 
-  useEffect(() => {
-    getServerSideProps();
-  }, []);
+function PostIndex(props) {
+  //destruct
+  const { posts } = props;
 
   return (
     <Layout>
-      <Head>
-        <title>Dashboard</title>
-      </Head>
       <div className="container" style={{ marginTop: "80px" }}>
         <div className="row">
           <div className="col-md-12">
@@ -90,4 +80,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default PostIndex;
